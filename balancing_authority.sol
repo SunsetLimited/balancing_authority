@@ -67,6 +67,7 @@ contract BalancingAuthority {
         }
     }
 
+    //with the mapping of all metered accounts, it's now possible to hold an auction by iterating through bids/offers
 
     struct MarketDay {
         uint year;
@@ -81,9 +82,15 @@ contract BalancingAuthority {
     }///structure to save the results of the day-ahead auction; r
 
     function clearDayAheadAuction() internal returns(DayAheadResults){
-        ///need to create a clearing function
-            ///iterate through the mapping of meters and gen meters to record their supply
-            ///this really could all be back-end, lets sleep on it
+        //iterate through meterMap, calling the dayAheadBid
+                //check that market days match
+                //if so, compile bids and add up load
+        //iterate though genMeterMap, compiling offers
+            ///the trick is to sort the offers; back end function?
+                ///SHOW IT CAN BE DONE IN EVM
+        //Must record the results; do so in metered accounts?
+            //this is probably right, we can then true-up in teh accounts, and a record of
+            //commitments can be easily kept
     }
 
     //system balancing
