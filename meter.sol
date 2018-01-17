@@ -39,7 +39,6 @@ contract MeteredAccount {
         return dayAheadBid;
     }///external function to allow the balancing authority to read the day-ahead bid from the load account
 
-
 }
 
 contract GenMeter is MeteredAccount {

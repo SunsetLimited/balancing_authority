@@ -33,7 +33,17 @@ contract balancingAuthority {
         uint day;
         }
 
-    ///storage meters are included in both mappings, as the can perform the function of load and generation
+    struct DayAheadResults {
+        MarketDay marketDay;
+        uint[] hourlyLoad; ///the total day-ahead demand, including from the external meter
+        uint[] clearingPrice; ///the cleared offer price in the day-ahead market, by hour
+    }///structure to save the results of the day-ahead auction; r
+
+    function clearDayAheadAuction() internal returns(DayAheadResults){
+        ///need to create a clearing function
+            ///iterate through the mapping of meters and gen meters to record their supply
+            ///this really could all be back-end, lets sleep on it
+    }
 
     //system balancing
         //read offers from meters
@@ -42,11 +52,13 @@ contract balancingAuthority {
             //mappings:
 	            //(uint => address)///match meters to address
 				//	loadAccounts, genAccounts, storageAccounts
+        //balance: could be done internal, or on the back-end
+            //first, just add up the
+            //need to create a supply curve
+        //write the cleared offers into the meter accounts?
 
-    //balancing function
-        //read data from metered accounts
     //real-time dispatch and true-up functions
-        ///saved day-ahead offers, check against meter for each account,
+        ///save day-ahead bids and offers, check against meter for each account, credit/debit based on real production
 
     //islanding function
 
