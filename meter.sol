@@ -1,9 +1,9 @@
 pragma solidity ^0.4.0;
 
-///meters are associated with accounts
+///meters are associated with specific addresses on the blockchain virtual machine
 contract MeteredAccount {
 
-    struct Meter {
+    struct Meter { ///receives real-time updates from the physical meter
         bool export; ///determines if meter is net load or generation
         uint powerFlow; ///net power flow in or out of the meter, determined by export variable
     }
