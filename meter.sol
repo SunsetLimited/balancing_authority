@@ -61,3 +61,26 @@ contract GenMeter is MeteredAccount {
 
 }
 
+//code below is validated in Remix
+
+contract meter{
+    uint load;
+    uint capacity = 100;
+    bool gen = true;
+    uint nameplate = 5000;
+    uint storageCapacity = 35;
+
+    function setMeter(uint _load) {
+        load = _load;
+    }
+
+    function readMeter() public view returns(uint){
+        return(load);
+    }
+
+    function getMeterSpecs() public view returns(uint, bool, uint, uint){
+        return (capacity, gen, nameplate, storageCapacity);
+    }
+}
+
+
