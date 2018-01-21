@@ -118,3 +118,73 @@ contract BalancingAuthority {
 contract SystemMeter is GenMeter{
     ///the system meter is a gen meter that can island
 }
+
+//Code below is validated in Remix:
+
+contract MeterInterface {
+    function readMeter() external view returns(uint);
+}
+
+contract AddMeterInterface {
+    function getMeterSpecs() external view returns(
+    uint _maxLoad,
+    bool _gen,
+    uint _nameplate,
+    uint _storageCapacity);
+}
+
+contract BalancingAuthority{
+
+    mapping (uint => address) meterMap;
+
+    struct MeteredAccount{
+        address accountAddress; ///the location of the relevant meter contract on the blockchain
+        uint maxLoad; ///maximum load of the account (watts)
+        bool gen; /// true/false whether this is a generation account
+        uint nameplate; ///the maximum generation output of the account (watts); 0 if gen = false
+        uint storageCapacity; ///the maximum storage capacity of the account (watt-hours)
+    }
+
+    MeteredAccount[] systemAccounts;
+    MeteredAccount[] generationAccount;
+    uint meterCount = 0;
+
+
+
+    function addMeter(address _address) returns(uint) {
+         uint _maxLoad;
+         bool _gen;
+         uint _nameplate;
+         uint _storageCapacity;
+       AddMeterInterface meterAdder = AddMeterInterface(_address);
+       (_maxLoad,_gen,_nameplate,_storageCapacity) = meterAdder.getMeterSpecs();
+       uint _id = systemAccounts.push(MeteredAccount(_address, _maxLoad, _gen, _nameplate, _storageCapacity)) -1;
+       meterMap[_id] = _address;
+       meterCount++;
+       return systemAccounts[_id].nameplate;
+         }
+
+    function getMeterCount() returns(uint){
+        return meterCount;
+    }
+
+
+    function getLoad() returns(uint) {
+       uint _cumulativeLoad = 0;
+       for(uint i = 0; i < meterCount; i++){
+            _cumulativeLoad += _readMeter(systemAccounts[i].accountAddress);
+       }
+        return _cumulativeLoad;
+    }
+
+    uint loadViewed;
+
+    function _readMeter(address _address) returns (uint){
+        MeterInterface meterReader = MeterInterface(_address);
+        loadViewed = meterReader.readMeter();
+        return loadViewed;
+    }
+
+
+
+}
