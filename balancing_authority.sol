@@ -123,7 +123,7 @@ contract SystemMeter is GenMeter{
 
 ///VERIFIED IN REMIX
 contract MeterInterface {
-    function readMeter() external view returns(uint);
+function readMeter() external view returns(uint);
 }
 
 
@@ -206,7 +206,6 @@ contract BalancingAuthority{
     } //returns the current load of a given meter
 
 
-
     function getSystemLoad() returns(uint) {
        uint _cumulativeLoad = 0;
        for(uint i = 0; i < meterCount; i++){
@@ -263,11 +262,50 @@ contract BalancingAuthority{
         return dayAheadOffers.readDayAheadOffer();
     }
 
+    function _getLowestAboveZero(uint[] _array) returns(uint){ //function to get index of lowest value in an array, above zero
+        uint _index = 0;
+            for(uint i; i < _array.length; i++){
+                if(_array[i] < _array[_index] && _array[i] > 0){
+                    _index = i;
+                }
+            }
+        return _index;
+        }
+
     function getDayAheadOffers(uint _year, uint _month, uint _day) returns (uint[3]){
-        ///this is where we need to balance the load and gen offers
-    }
+        uint[3] memory _hourlyLoad = getDayAheadBids(_year, _month, _day); //get the load quantities
+        uint[3] memory _hourlyPrice; //declare variable for the prices we're returning
+        for(uint h; h < 3; h++){
+            uint[] memory _hourlyOfferPrices; //create an array of prices offered for the hour
+            uint[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
+            for(uint i = 0; i < genMeterCount; i++){
+                uint _offerYear;
+                uint _offerMonth;
+                uint _offerDay;
+                uint _price;
+                uint[3] memory _meterOfferQuantities;
+                (_price, _meterOfferQuantities, _offerYear, _offerMonth, _offerDay) = _readDayAheadOffer(genMeterMap[i]);
+                if(_offerYear == _year && _offerMonth == _month && _offerDay == _day){ //validate offer day
+                    _hourlyOfferPrices[i] = _price;
+                    _hourlyOfferQuantities[i] = _meterOfferQuantities[h];
+                }
+            }
+            uint _genCounter = 0;
+            uint _marginalPrice;
+            while(_genCounter < _hourlyLoad[h]){
+            uint _marginalIndex = _getLowestAboveZero(_hourlyOfferPrices);//note, this is an implicit MOPR of zero
+            _marginalPrice = _hourlyOfferPrices[_marginalIndex];
+            _genCounter += _hourlyOfferQuantities[_marginalIndex];
+            _hourlyOfferPrices[_marginalIndex] = 0;
+                }
+            _hourlyPrice[h] = _marginalPrice;
+            }
+        return _hourlyPrice;
+        }
 
     }
+
+
 
 
 
