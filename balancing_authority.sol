@@ -119,8 +119,9 @@ contract SystemMeter is GenMeter{
     ///the system meter is a gen meter that can island
 }
 
-//Code below is validated in Remix:
 
+
+///verified in solidity
 contract MeterInterface {
     function readMeter() external view returns(uint);
 }
@@ -131,7 +132,15 @@ contract AddMeterInterface {
     bool _gen,
     uint _nameplate,
     uint _storageCapacity);
-}
+} //interface to add a meter to the system and record its specifications
+
+contract DayAheadBidInterface{
+    function readDayAheadBid() external view returns(
+        uint[3] quantities,
+        uint year,
+        uint month,
+        uint day);
+} //interface to read the day ahead bid from a load meter
 
 contract BalancingAuthority{
 
@@ -166,25 +175,64 @@ contract BalancingAuthority{
 
     function getMeterCount() returns(uint){
         return meterCount;
-    }
+    }   //returns total count of meters on the system
+
+    function _readMeter(address _address) returns (uint){
+        MeterInterface meterReader = MeterInterface(_address);
+        return meterReader.readMeter();
+    } //returns the current load of a given meter
 
 
-    function getLoad() returns(uint) {
+
+    function getSystemLoad() returns(uint) {
        uint _cumulativeLoad = 0;
        for(uint i = 0; i < meterCount; i++){
             _cumulativeLoad += _readMeter(systemAccounts[i].accountAddress);
        }
-        return _cumulativeLoad;
+       return _cumulativeLoad;
     }
 
-    uint loadViewed;
+    function _readDayAheadBid(address _address) returns(uint[3], uint, uint, uint){
+        DayAheadBidInterface dayAheadBids = DayAheadBidInterface(_address);
+        return dayAheadBids.readDayAheadBid();
+    }
 
-    function _readMeter(address _address) returns (uint){
-        MeterInterface meterReader = MeterInterface(_address);
-        loadViewed = meterReader.readMeter();
-        return loadViewed;
+    struct systemDayAheadLoad{
+      uint year;
+      uint month;
+      uint day;
+      uint[3] dayAheadLoad; ///hourly expected load
+    }//structure to record the system-wide day ahead load
+
+    function getDayAheadBids(uint _year, uint _month, uint _day) returns(uint[3]){
+        uint[3] memory _cumulativeQuantities;
+        for(uint i = 0; i < meterCount; i++){
+            uint _bidYear;
+            uint _bidMonth;
+            uint _bidDay;
+            (, _bidYear, _bidMonth, _bidDay) = _readDayAheadBid(systemAccounts[i].accountAddress);
+            if(_bidYear == _year && _bidMonth == _month && _bidDay == _day){
+                uint[3] memory _bidQuantities;
+                (_bidQuantities,,,) = _readDayAheadBid(systemAccounts[i].accountAddress);
+                for(uint j = 0; j < 3; j++){
+                    _cumulativeQuantities[j] += _bidQuantities[j];
+                }
+            }
+        }
+        return _cumulativeQuantities;
+    }
+
     }
 
 
 
-}
+
+
+
+
+
+
+
+
+
+

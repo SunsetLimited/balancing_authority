@@ -31,7 +31,6 @@ contract MeteredAccount {
 
     function _setDayAheadBid(uint[], _quantities, uint[] _prices, MarketDay _day) internal{
         dayAheadBid.quantities = _quantities;
-        dayAheadBid.prices = _prices;
         dayAhead.dayAhead = _day;
     }///function to make a bid that becomes readable by the balancing authority
 
@@ -62,25 +61,53 @@ contract GenMeter is MeteredAccount {
 }
 
 //code below is validated in Remix
-
 contract meter{
-    uint load;
-    uint capacity = 100;
-    bool gen = true;
-    uint nameplate = 5000;
-    uint storageCapacity = 35;
+    uint load; //current power usage
+
+    uint maxLoad; //(kW)maximum capacity of the meter
+    bool gen; //indicates whether or not the meter has associated generation
+    uint nameplate; //(kW)nameplate capacity of the generation associated with the meter
+    uint storageCapacity; //(kWh)total storage capacity associated with the meter
 
     function setMeter(uint _load) {
         load = _load;
-    }
+    } //function for the physical meter to record instantaneous power usage
+
 
     function readMeter() public view returns(uint){
         return(load);
-    }
+    } //function for balancing authority or other external contracts to read the current load
 
     function getMeterSpecs() public view returns(uint, bool, uint, uint){
-        return (capacity, gen, nameplate, storageCapacity);
-    }
+        return (maxLoad, gen, nameplate, storageCapacity);
+    } //function for balancing authority to get meter specs to populate the account
+
+    struct MarketDay {
+        uint year;
+        uint month;
+        uint day;
+        } ///designation of the market day for which the offers are made
+
+    struct DayAheadBid {
+        uint[3] quantities;///array of hourly load forecast, hour-beginning convention for indexing
+        MarketDay marketDay; ///the day for which the offers are made
+        }///define the datatype for a day ahead bid to purchase power from the metered account
+            ///generally, load accounts are price takers, though they may choose to curtail in the real-time
+
+    DayAheadBid dayAheadBid;///declare the day ahead bid variable
+
+    function _setDayAheadBid(uint[3] _quantities, uint _year, uint _month, uint _day) {
+        dayAheadBid.quantities = _quantities;
+        dayAheadBid.marketDay.year = _year;
+        dayAheadBid.marketDay.month = _month;
+        dayAheadBid.marketDay.day = _day;
+    }///function to make a bid that becomes readable by the balancing authority
+
+    function readDayAheadBid() external returns(uint[3], uint, uint, uint){
+        return (dayAheadBid.quantities, dayAheadBid.marketDay.year, dayAheadBid.marketDay.month, dayAheadBid.marketDay.day);
+    }///external function to allow the balancing authority to read the day-ahead bid from the load account
+
+
 }
 
 
