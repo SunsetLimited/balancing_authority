@@ -121,7 +121,7 @@ contract SystemMeter is GenMeter{
 
 
 
-///verified in solidity
+///VERIFIED IN REMIX
 contract MeterInterface {
     function readMeter() external view returns(uint);
 }
@@ -258,10 +258,23 @@ contract BalancingAuthority{
         return _cumulativeGen;
     }
 
-    function _readDayAheadGen(){}
-    function getDayAheadOffers(){}
+    function _readDayAheadOffer(address _address) returns (uint, uint[3], uint, uint, uint){
+        DayAheadOfferInterface dayAheadOffers = DayAheadOfferInterface(_address);
+        return dayAheadOffers.readDayAheadOffer();
+    }
+
+    function getDayAheadOffers(uint _year, uint _month, uint _day) returns (uint[3]){
+        ///this is where we need to balance the load and gen offers
+    }
 
     }
+
+
+
+
+
+
+
 
 
 
