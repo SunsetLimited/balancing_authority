@@ -126,6 +126,7 @@ contract MeterInterface {
     function readMeter() external view returns(uint);
 }
 
+
 contract AddMeterInterface {
     function getMeterSpecs() external view returns(
     uint _maxLoad,
@@ -142,9 +143,23 @@ contract DayAheadBidInterface{
         uint day);
 } //interface to read the day ahead bid from a load meter
 
+contract GenMeterInterface {
+    function readGen() external view returns(uint);
+}
+
+contract DayAheadOfferInterface {
+    function readDayAheadOffer() external view  returns(
+        uint price,
+        uint[3] quantities,
+        uint year,
+        uint month,
+        uint day);
+}
+
 contract BalancingAuthority{
 
     mapping (uint => address) meterMap;
+    mapping (uint => address) genMeterMap;
 
     struct MeteredAccount{
         address accountAddress; ///the location of the relevant meter contract on the blockchain
@@ -155,12 +170,12 @@ contract BalancingAuthority{
     }
 
     MeteredAccount[] systemAccounts;
-    MeteredAccount[] generationAccount;
+    MeteredAccount[] generationAccounts;
     uint meterCount = 0;
+    uint genMeterCount = 0;
 
 
-
-    function addMeter(address _address) returns(uint) {
+    function addMeter(address _address)  {
          uint _maxLoad;
          bool _gen;
          uint _nameplate;
@@ -170,12 +185,20 @@ contract BalancingAuthority{
        uint _id = systemAccounts.push(MeteredAccount(_address, _maxLoad, _gen, _nameplate, _storageCapacity)) -1;
        meterMap[_id] = _address;
        meterCount++;
-       return systemAccounts[_id].nameplate;
-         }
+       if(_gen == true){
+           genMeterMap[genMeterCount] = _address;
+           genMeterCount++;
+       }
+
+    }
 
     function getMeterCount() returns(uint){
         return meterCount;
     }   //returns total count of meters on the system
+
+    function getGenMeterCount() returns(uint){
+        return genMeterCount;
+    }
 
     function _readMeter(address _address) returns (uint){
         MeterInterface meterReader = MeterInterface(_address);
@@ -222,7 +245,30 @@ contract BalancingAuthority{
         return _cumulativeQuantities;
     }
 
+    function _readGen(address _address) returns(uint){
+        GenMeterInterface genReader = GenMeterInterface(_address);
+        return genReader.readGen();
     }
+
+    function _getSystemGen() returns(uint){
+        uint _cumulativeGen = 0;
+        for (uint i = 0; i < genMeterCount; i++){
+            _cumulativeGen += _readGen(genMeterMap[i]);
+        }
+        return _cumulativeGen;
+    }
+
+    function _readDayAheadGen(){}
+    function getDayAheadOffers(){}
+
+    }
+
+
+
+
+
+
+
 
 
 
