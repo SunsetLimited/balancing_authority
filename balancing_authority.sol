@@ -262,6 +262,7 @@ contract BalancingAuthority{
         return dayAheadOffers.readDayAheadOffer();
     }
 
+
     function _getLowestAboveZero(uint[] _array) returns(uint){ //function to get index of lowest value in an array, above zero
         uint _index = 0;
             for(uint i; i < _array.length; i++){
@@ -272,23 +273,37 @@ contract BalancingAuthority{
         return _index;
         }
 
-    function getDayAheadOffers(uint _year, uint _month, uint _day) returns (uint[3]){
-        uint[3] memory _hourlyLoad = getDayAheadBids(_year, _month, _day); //get the load quantities
-        uint[3] memory _hourlyPrice; //declare variable for the prices we're returning
-        for(uint h; h < 3; h++){
-            uint[] memory _hourlyOfferPrices; //create an array of prices offered for the hour
-            uint[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
+    ////
+    uint[3] _hourlyLoad;
+    function _setHourlyLoad(uint _year, uint _month, uint _day){
+        _hourlyLoad = getDayAheadBids(_year, _month, _day);
+    }
+
+    address[] _validOffers;
+
+    function _setValidOffers(uint _year, uint _month, uint _day) {
             for(uint i = 0; i < genMeterCount; i++){
                 uint _offerYear;
                 uint _offerMonth;
                 uint _offerDay;
+                (,, _offerYear, _offerMonth, _offerDay) = _readDayAheadOffer(genMeterMap[i]);
+                if(_offerYear == _year && _offerMonth == _month && _offerDay == _day){
+                _validOffers[i] = genMeterMap[i];
+            }
+            }
+            }
+
+    function getDayAheadOffers() returns (uint[3]){
+        uint[3] memory _hourlyPrice; //declare variable for the prices we're returning
+        for(uint h; h < 3; h++){
+            uint[] memory _hourlyOfferPrices; //create an array of prices offered for the hour
+            uint[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
+            for(uint i = 0; i < _validOffers.length; i++){
                 uint _price;
                 uint[3] memory _meterOfferQuantities;
-                (_price, _meterOfferQuantities, _offerYear, _offerMonth, _offerDay) = _readDayAheadOffer(genMeterMap[i]);
-                if(_offerYear == _year && _offerMonth == _month && _offerDay == _day){ //validate offer day
-                    _hourlyOfferPrices[i] = _price;
-                    _hourlyOfferQuantities[i] = _meterOfferQuantities[h];
-                }
+                (_price, _meterOfferQuantities,,,) = _readDayAheadOffer(genMeterMap[i]);
+                _hourlyOfferPrices[i] = _price;
+                _hourlyOfferQuantities[i] = _meterOfferQuantities[h];
             }
             uint _genCounter = 0;
             uint _marginalPrice;
@@ -304,6 +319,8 @@ contract BalancingAuthority{
         }
 
     }
+
+
 
 
 
