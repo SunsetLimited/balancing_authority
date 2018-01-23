@@ -2,7 +2,7 @@ pragma solidity ^0.4.0;
 
 import "./meter.sol";
 
-contract BalancingAuthority {
+contract BalancingAuthority is Meter{
     ///the following variables are descriptive of the system; functions for updating them are included below
     uint totalMeters; ///number of individual metered accounts in the balancing authority
     uint totalGenMeters; ///number of metered accounts with associated distributed generation
@@ -23,7 +23,7 @@ contract BalancingAuthority {
 
     SystemMeter systemMeter; ///declare the system meter
 
-    function setSystemMeter(bool _export, uint _powerFlow, uint _systemBid, uint _systemOffer) private{
+    function _setSystemMeter(bool _export, uint _powerFlow, uint _systemBid, uint _systemOffer) private{
         systemMeter.export = _export;
         systemMeter.powerFlow = _powerFlow;
         systemMeter.systemBid = _systemBid;
@@ -69,20 +69,18 @@ contract BalancingAuthority {
 
     //with the mapping of all metered accounts, it's now possible to hold an auction by iterating through bids/offers
 
-    struct MarketDay {
-        uint year;
-        uint month;
-        uint day;
-        }
-
     struct DayAheadResults {
         MarketDay marketDay;
         uint[] hourlyLoad; ///the total day-ahead demand, including from the external meter
         uint[] clearingPrice; ///the cleared offer price in the day-ahead market, by hour
-    }///structure to save the results of the day-ahead auction; r
+    }///structure to save the results of the day-ahead auction;
 
-    function clearDayAheadAuction() internal returns(DayAheadResults){
-        //iterate through meterMap, calling the dayAheadBid
+    function _clearDayAheadAuction() internal returns(DayAheadResults){
+        uint _load = 0;
+        uint _
+
+        for (i = 0, i < totalMeters, i++){
+            meterMap[i].//iterate through meterMap, calling the dayAheadBid
                 //check that market days match
                 //if so, compile bids and add up load
         //iterate though genMeterMap, compiling offers
@@ -263,15 +261,21 @@ contract BalancingAuthority{
     }
 
 
-    function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //function to get index of lowest value in an array, above zero
-        uint _index = 0;
-            for(uint i; i < _array.length; i++){
-                if(_array[i] < _array[_index] && _array[i] > _x){
-                    _index = i;
-                }
+function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //function to get index of lowest value in an array, above zero
+    uint _lowestIndex = 0;
+    while(_array[_lowestIndex] < _x){
+        _lowestIndex++;
+    }
+    for(uint i = _lowestIndex; i < _array.length; i++){
+        if(_array[i] > _x){
+            if(_array[_lowestIndex] > _array[i]){
+                _lowestIndex = i;
             }
-        return _index;
         }
+    }
+
+    return _lowestIndex;
+}
 
     ////
     uint[3] _hourlyLoad;

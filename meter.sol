@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 ///meters are associated with specific addresses on the blockchain virtual machine
-contract MeteredAccount {
+contract Meter {
 
     struct Meter { ///receives real-time updates from the physical meter
         bool export; ///determines if meter is net load or generation
@@ -40,7 +40,7 @@ contract MeteredAccount {
 
 }
 
-contract GenMeter is MeteredAccount {
+contract GenMeter is Meter {
 
     struct DayAheadOffer {
         uint[] quantities;///array of hourly generation quantities offered, hour-beginning convention for indexing
