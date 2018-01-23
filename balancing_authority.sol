@@ -263,10 +263,10 @@ contract BalancingAuthority{
     }
 
 
-    function _getLowestAboveZero(uint[] _array) returns(uint){ //function to get index of lowest value in an array, above zero
+    function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //function to get index of lowest value in an array, above zero
         uint _index = 0;
             for(uint i; i < _array.length; i++){
-                if(_array[i] < _array[_index] && _array[i] > 0){
+                if(_array[i] < _array[_index] && _array[i] > _x){
                     _index = i;
                 }
             }
@@ -310,22 +310,19 @@ contract BalancingAuthority{
                 _hourlyOfferQuantities[i] = _meterOfferQuantities[h];
             }
             uint _genCounter = 0;
-            uint _marginalPrice;
+            uint[] _marginalPrices;
+            uint _marginalIndex;
             while(_genCounter < _hourlyLoad[h]){
-            uint _marginalIndex = _getLowestAboveZero(_hourlyOfferPrices);//note, this is an implicit MOPR of zero
-            _marginalPrice = _hourlyOfferPrices[_marginalIndex];
-            _genCounter += _hourlyOfferQuantities[_marginalIndex];
-            _hourlyOfferPrices[_marginalIndex] = 0;
+                _marginalIndex = _getLowestAboveX(_hourlyOfferPrices, 0);//note, this is an implicit MOPR of zero
+                _marginalPrices.push(_hourlyOfferPrices[_marginalIndex]);
+                _genCounter += _hourlyOfferQuantities[_marginalIndex];
                 }
-            _hourlyPrice[h] = _marginalPrice;
+            _hourlyPrice[h] = _marginalPrices[_marginalPrices.length -1];
             }
         return _hourlyPrice;
         }
 
     }
-
-
-
 
 
 
