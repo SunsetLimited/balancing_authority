@@ -288,10 +288,14 @@ contract BalancingAuthority{
                 uint _offerDay;
                 (,, _offerYear, _offerMonth, _offerDay) = _readDayAheadOffer(genMeterMap[i]);
                 if(_offerYear == _year && _offerMonth == _month && _offerDay == _day){
-                _validOffers[i] = genMeterMap[i];
+                    _validOffers.push(genMeterMap[i]);
             }
             }
             }
+
+    function viewValidOffers() returns(address[]){
+        return _validOffers;
+    }
 
     function getDayAheadOffers() returns (uint[3]){
         uint[3] memory _hourlyPrice; //declare variable for the prices we're returning
@@ -319,6 +323,8 @@ contract BalancingAuthority{
         }
 
     }
+
+
 
 
 
