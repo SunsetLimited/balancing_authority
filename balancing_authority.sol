@@ -263,7 +263,7 @@ contract BalancingAuthority{
 
 function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //function to get index of lowest value in an array, above zero
     uint _lowestIndex = 0;
-    while(_array[_lowestIndex] < _x){
+    while(_array[_lowestIndex] <= _x){
         _lowestIndex++;
     }
     for(uint i = _lowestIndex; i < _array.length; i++){
