@@ -123,12 +123,14 @@ contract BalancingAuthority{
         return _cumulativeGen;
     }
   //2: MARKET CLEARING FUNCTIONS
+    //2(a) functions to read bids for hour-ahead load
+
     function _readHourAheadBid(address _address) returns(uint, uint, uint, uint, uint){
         HourAheadBidInterface hourAheadBids = DayAheadBidInterface(_address);
         return hourAheadBids.hourDayAheadBid();
     }
 
-    function getDayAheadBids(uint _year, uint _month, uint _day, uint _hour) returns(uint){
+    function getHourAheadBids(uint _year, uint _month, uint _day, uint _hour) returns(uint){
         uint memory _cumulativeBids;
         for(uint i = 0; i < meterCount; i++){
             uint _bidQuantity;
@@ -141,15 +143,40 @@ contract BalancingAuthority{
                     _cumulativeBids += _bidQuantity;
                 }
                                     }
-        return _cumulativeQuantity;
+        return _cumulativeBids;
     }
+
+    //2(b) functions to read hour-ahead offers
     function _readHourAheadOffer(address _address) returns (uint, uint, uint, uint, uint, uint){//reads hour-ahead offer from a given meter
         HourAheadOfferInterface hourAheadOffer = HourAheadOfferInterface(_address);
         return hourAheadOffer.readHourAheadOffer();
     }
 
-///
-function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //for itering through to find marginal prices
+    //2(c) Market clearing functions
+
+    uint hourAheadLoad = getHourAheadBids(); //first step of auction clearing: set the hour-ahead load (power demand)
+
+    address[] _validOffers; ///map of valid offers for the hour-ahead auction, to be deleted/reset after market clears
+
+    function _setValidOffers(uint _year, uint _month, uint _day, uint _hour) {
+            for(uint i = 0; i < genMeterCount; i++){
+                uint _offerYear;
+                uint _offerMonth;
+                uint _offerDay;
+                uint _offerHour;
+                (,, _offerYear, _offerMonth, _offerDay, _offerHour) = _readHourAheadOffer(genMeterMap[i]);
+                if(_offerYear == _year && _offerMonth == _month && _offerDay == _day && _offerHour == _hour){
+                    _validOffers.push(genMeterMap[i]); //adds compliant offers to the current auction
+            }
+            }
+            }
+
+    function viewValidOffers() returns(address[]){
+        return _validOffers;
+    }
+
+
+    function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //for iterating through to find marginal prices
     uint _lowestIndex = 0;
     while(_array[_lowestIndex] =< _x){ //first iterate through array until finding next higher price
         _lowestIndex++; //bug in this prototype: handling identical offers, and offers == 0;
@@ -164,58 +191,41 @@ function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //for itering t
     return _lowestIndex;
 }
 
-    ////////////////Pick up here
-    //clear hourly marginal prices
-    //get
-    uint[3] _hourlyLoad;
 
-    function _getHourlyLoad(uint _year, uint _month, uint _day){
-        _hourlyLoad = getDayAheadBids(_year, _month, _day);
-    }
+    function clearHourAhead() returns (uint, address[]){
+        uint memory _hourlyPrice; //declare variable for the prices we're returning
+        uint[] memory _hourlyOfferPrices; //create an array of prices offered for the hour
+        uint[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
+        for(uint i = 0; i < _validOffers.length; i++){
+            uint _price;
+            uint _offerQuantity;
+            (_price, _offerQuantity,,,,) = _readDayAheadOffer(_validOffers[i]);
+            _hourlyOfferPrices[i] = _price;
+            _hourlyOfferQuantities[i] = _offerQuantity;
+            }
+        uint _genCounter = 0;
+        uint[] _marginalPrices;
+        address[] _clearedOffers;
+        uint _marginalIndex = 0;
+        while(_genCounter < hourAheadLoad){
+            _marginalIndex = _getLowestAboveX(_hourlyOfferPrices, _hourlyOfferPrices[_marginalIndex]);//note, this is an implicit MOPR of zero
+            _marginalPrices.push(_hourlyOfferPrices[_marginalIndex]);
+            _clearedOffers.push(_validOffers[_marginalIndex]);
+            _genCounter += _hourlyOfferQuantities[_marginalIndex];
+                    } //iterates throgh the supply curve until gen > load;
+        _hourlyPrice[h] = _marginalPrices[_marginalPrices.length -1];
 
-    address[] _validOffers;
+        delete _validOffers; //clears out the array of offers
 
-    function _setValidOffers(uint _year, uint _month, uint _day) {
-            for(uint i = 0; i < genMeterCount; i++){
-                uint _offerYear;
-                uint _offerMonth;
-                uint _offerDay;
-                (,, _offerYear, _offerMonth, _offerDay) = _readDayAheadOffer(genMeterMap[i]);
-                if(_offerYear == _year && _offerMonth == _month && _offerDay == _day){
-                    _validOffers.push(genMeterMap[i]);
-            }
-            }
-            }
-
-    function viewValidOffers() returns(address[]){
-        return _validOffers;
-    }
-
-    function getDayAheadOffers() returns (uint[3]){
-        uint[3] memory _hourlyPrice; //declare variable for the prices we're returning
-        for(uint h; h < 3; h++){
-            uint[] memory _hourlyOfferPrices; //create an array of prices offered for the hour
-            uint[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
-            for(uint i = 0; i < _validOffers.length; i++){
-                uint _price;
-                uint[3] memory _meterOfferQuantities;
-                (_price, _meterOfferQuantities,,,) = _readDayAheadOffer(genMeterMap[i]);
-                _hourlyOfferPrices[i] = _price;
-                _hourlyOfferQuantities[i] = _meterOfferQuantities[h];
-            }
-            uint _genCounter = 0;
-            uint[] _marginalPrices;
-            uint _marginalIndex;
-            while(_genCounter < _hourlyLoad[h]){
-                _marginalIndex = _getLowestAboveX(_hourlyOfferPrices, 0);//note, this is an implicit MOPR of zero
-                _marginalPrices.push(_hourlyOfferPrices[_marginalIndex]);
-                _genCounter += _hourlyOfferQuantities[_marginalIndex];
-                }
-            _hourlyPrice[h] = _marginalPrices[_marginalPrices.length -1];
-            }
-        return _hourlyPrice;
+        return (_hourlyPrice, _clearedOffers);
         }
 
+    uint clearingPrice;
+    address[] winningGenerators;
+
+    (clearingPrice, winningGenerators) = clearHourAhead();
+
+    ///NEXT: rewards winners;
     }
 
 
