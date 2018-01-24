@@ -5,13 +5,14 @@ contract Meter{
     uint maxLoad; //(kW)maximum capacity of the meter
     bool gen = false; //indicates whether or not the meter has associated generation
 
+
     function _setMeterSpecs(uint _maxLoad){
         maxLoad = _maxLoad;
     } //meter owner sets its maximum power usage
 
-    function getMeterSpecs() public view returns(uint, bool){
-        return (maxLoad, gen);
-    } //allows Balancing Authority to call information on the meter
+    function getMeterSpecs() public view returns(uint, bool, uint, uint){
+        return (maxLoad, gen, 0, 0);
+    } //allows Balancing Authority to call information on the load meter; returns 0 for generation specs
 
     function setLoad(uint _load) {
         load = _load;
@@ -59,7 +60,7 @@ contract GenMeter is Meter{
         storageCapacity = _storageCapacity;
     }
 
-    function getGenMeterSpecs() public view returns(uint, bool, uint, uint){
+    function getMeterSpecs() public view returns(uint, bool, uint, uint){
         return (maxLoad, gen, nameplate, storageCapacity);
     }
 
@@ -92,7 +93,7 @@ contract GenMeter is Meter{
         hourAheadOffer.hour = _hour;
     }///function to make an offer that becomes readable by the balancing authority
 
-    function readDayAheadOffer() external returns(uint, uint, uint, uint, uint, uint){
+    function readHourAheadOffer() external returns(uint, uint, uint, uint, uint, uint){
         return (hourAheadOffer.price, hourAheadOffer.quantity, hourAheadOffer.year, hourAheadOffer.month, hourAheadOffer.day, hourAheadOffer.hour);
     }///external function to allow the balancing authority to read the day-ahead bid from the load account
 

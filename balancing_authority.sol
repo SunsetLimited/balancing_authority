@@ -17,7 +17,6 @@ contract MeterInterface {
 function readMeter() external view returns(uint);
 }
 
-
 contract AddMeterInterface {
     function getMeterSpecs() external view returns(
     uint _maxLoad,
@@ -26,25 +25,27 @@ contract AddMeterInterface {
     uint _storageCapacity);
 } //interface to add a meter to the system and record its specifications
 
-contract DayAheadBidInterface{
-    function readDayAheadBid() external view returns(
-        uint[3] quantities,
+contract HourAheadBidInterface{
+    function readHourAheadBid() external view returns(
+        uint quantity,
         uint year,
         uint month,
-        uint day);
+        uint day,
+        uint hour);
 } //interface to read the day ahead bid from a load meter
 
 contract GenMeterInterface {
     function readGen() external view returns(uint);
 }
 
-contract DayAheadOfferInterface {
-    function readDayAheadOffer() external view  returns(
+contract HourAheadOfferInterface {
+    function readHourAheadOffer() external view  returns(
         uint price,
-        uint[3] quantities,
+        uint quantity,
         uint year,
         uint month,
-        uint day);
+        uint day,
+        uint hour);
 }
 
 contract BalancingAuthority{
@@ -105,9 +106,9 @@ contract BalancingAuthority{
        return _cumulativeLoad;
     }
 
-    function _readDayAheadBid(address _address) returns(uint[3], uint, uint, uint){
-        DayAheadBidInterface dayAheadBids = DayAheadBidInterface(_address);
-        return dayAheadBids.readDayAheadBid();
+    function _readHourAheadBid(address _address) returns(uint, uint, uint, uint, uint){
+        HourAheadBidInterface hourAheadBids = DayAheadBidInterface(_address);
+        return hourAheadBids.hourDayAheadBid();
     }
 
     struct systemDayAheadLoad{
@@ -148,9 +149,9 @@ contract BalancingAuthority{
         return _cumulativeGen;
     }
 
-    function _readDayAheadOffer(address _address) returns (uint, uint[3], uint, uint, uint){
-        DayAheadOfferInterface dayAheadOffers = DayAheadOfferInterface(_address);
-        return dayAheadOffers.readDayAheadOffer();
+    function _readHourAheadOffer(address _address) returns (uint, uint, uint, uint, uint, uint){
+        HourAheadOfferInterface hourAheadOffer = HourAheadOfferInterface(_address);
+        return hourAheadOffer.readHourAheadOffer();
     }
 
 
@@ -166,11 +167,10 @@ function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //function to g
             }
         }
     }
-
     return _lowestIndex;
 }
 
-    ////
+    ////////////////Pick up here
     uint[3] _hourlyLoad;
     function _setHourlyLoad(uint _year, uint _month, uint _day){
         _hourlyLoad = getDayAheadBids(_year, _month, _day);
