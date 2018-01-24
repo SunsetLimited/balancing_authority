@@ -225,7 +225,8 @@ contract BalancingAuthority{
 
     (clearingPrice, winningGenerators) = clearHourAhead();
 
-    ///NEXT: rewards winners;
+    ///NEXT:  test in REMIX, then rewards winners;
+    ///TRUE UP FUNCTIONS;
     }
 
 
