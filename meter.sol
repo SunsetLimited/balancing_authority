@@ -32,16 +32,16 @@ contract Meter{
 
     HourAheadBid hourAheadBid;///declare the day-ahead bids
 
-    function _setHourAheadBid(_quantity, uint _year, uint _month, uint _day, uint _hour) {
+    function _setHourAheadBid(uint _quantity, uint _year, uint _month, uint _day, uint _hour) {
         hourAheadBid.quantity = _quantity;
-        hourAheadBid.marketDay.year = _year;
-        hourAheadBid.marketDay.month = _month;
-        hourAheadBid.marketDay.day = _day;
+        hourAheadBid.year = _year;
+        hourAheadBid.month = _month;
+        hourAheadBid.day = _day;
         hourAheadBid.hour - _hour;
     }///function to make a bid that becomes readable by the balancing authority
 
     function readHourAheadBid() external returns(uint, uint, uint, uint, uint){
-        return (dayAheadBid.quantity, dayAheadBid.year, dayAheadBid.month, dayAheadBid.day, dayAheadBid.hour);
+        return (hourAheadBid.quantity, hourAheadBid.year, hourAheadBid.month, hourAheadBid.day, hourAheadBid.hour);
     }///external function to allow the balancing authority to read the day-ahead bid from the load account
 
 }
@@ -54,14 +54,14 @@ contract GenMeter is Meter{
     uint availableStorage; //(kWh) currently available storage
 
     function _setMeterSpecs(uint _maxLoad, uint _nameplate, uint _storageCapacity){//establishing distributed generation specifications
-        load = _load;
+        maxLoad = _maxLoad;
         nameplate = _nameplate;
         storageCapacity = _storageCapacity;
     }
 
-    function getMeterSpecs() public view returns(uint, bool, uint, uint){
+    function getGenMeterSpecs() public view returns(uint, bool, uint, uint){
         return (maxLoad, gen, nameplate, storageCapacity);
-    } //supersedes the previous, incorporates new variables
+    }
 
     function setGeneration(uint _generation) {
         generation = _generation;
@@ -83,17 +83,17 @@ contract GenMeter is Meter{
 
     HourAheadOffer hourAheadOffer; //declare the day-ahead offers
 
-    function _setHourAheadOffer(uint _price, uint _quantity, uint _year, uint _month, uint _day, uint hour) {
+    function _setHourAheadOffer(uint _price, uint _quantity, uint _year, uint _month, uint _day, uint _hour) {
         hourAheadOffer.price = _price;
         hourAheadOffer.quantity = _quantity;
-        hourAheadOffer.marketDay.year = _year;
-        hourAheadOffer.marketDay.month = _month;
-        hourAheadOffer.marketDay.day = _day;
-        hourAheadOffer.hour = _hour
+        hourAheadOffer.year = _year;
+        hourAheadOffer.month = _month;
+        hourAheadOffer.day = _day;
+        hourAheadOffer.hour = _hour;
     }///function to make an offer that becomes readable by the balancing authority
 
     function readDayAheadOffer() external returns(uint, uint, uint, uint, uint, uint){
-        return (dayAheadOffer.price, dayAheadOffer.quantity, dayAheadOffer.year, dayAheadOffer.month, dayAheadOffer.day, dayAheadOffer.hour);
+        return (hourAheadOffer.price, hourAheadOffer.quantity, hourAheadOffer.year, hourAheadOffer.month, hourAheadOffer.day, hourAheadOffer.hour);
     }///external function to allow the balancing authority to read the day-ahead bid from the load account
 
 }
