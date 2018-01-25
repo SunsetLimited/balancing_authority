@@ -1,4 +1,44 @@
 
+contract SystemMeter is GenMeter{
+    ///the system meter is a gen meter that can island
+}
+
+///0: ESTABLISH INTERFACES FOR BALANCING AUTHORITY TO DRAW DATA FROM METERS
+contract MeterInterface {
+function readMeter() external view returns(int);
+}
+
+contract AddMeterInterface {
+    function getMeterSpecs() external view returns(
+    uint _maxLoad,
+    bool _gen,
+    uint _nameplate,
+    uint _storageCapacity);
+} //interface to add a meter to the system and record its specifications
+
+contract HourAheadBidInterface{
+    function readHourAheadBid() external view returns(
+        int quantity,
+        uint year,
+        uint month,
+        uint day,
+        uint hour);
+} //interface to read the day ahead bid from a load meter
+
+contract GenMeterInterface {
+    function readGen() external view returns(uint);
+}
+
+contract HourAheadOfferInterface {
+    function readHourAheadOffer() external view  returns(
+        uint price,
+        int quantity,
+        uint year,
+        uint month,
+        uint day,
+        uint hour);
+}
+
 /// BALANCING AUTHORITY CONTRACT
 contract BalancingAuthority{
    ///FOUNDATIONAL INTERFACES AND VARIABLES FOR INTERACTING WITH THE METERED POWER SYSTEM
@@ -150,19 +190,19 @@ contract BalancingAuthority{
     function clearHourAhead() returns (uint, address[]){
         uint _hourlyPrice; //declare variable for the prices we're returning
         uint[] memory _hourlyOfferPrices; //create an array of prices offered for the hour
-        int[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
+        uint[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
         for(uint i = 0; i < _validOffers.length; i++){
             uint _price;
             int _offerQuantity;
             (_price, _offerQuantity,,,,) = _readHourAheadOffer(_validOffers[i]);
             _hourlyOfferPrices[i] = _price;
-            _hourlyOfferQuantities[i] = _offerQuantity;
+            _hourlyOfferQuantities[i] = uint(_offerQuantity);
             }
-        int _genCounter = 0;
+        uint _genCounter = 0;
         uint[] _marginalPrices;
         address[] _clearedOffers;
         uint _marginalIndex = 0;
-        while(_genCounter < hourAheadLoad){
+        while(_genCounter < uint(-hourAheadLoad)){
             _marginalIndex = _getLowestAboveX(_hourlyOfferPrices, _hourlyOfferPrices[_marginalIndex]);//note, this is an implicit MOPR of zero
             _marginalPrices.push(_hourlyOfferPrices[_marginalIndex]);
             _clearedOffers.push(_validOffers[_marginalIndex]);
