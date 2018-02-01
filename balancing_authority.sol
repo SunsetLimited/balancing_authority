@@ -224,3 +224,99 @@ contract BalancingAuthority{
     ///TRUE UP FUNCTIONS;
     }
 
+///following code is attempt to optimize auction clearing function in browser solidity
+
+contract HourAheadOfferInterface {
+    function readHourAheadOffer() external view  returns(
+        uint price,
+        int quantity,
+        uint year,
+        uint month,
+        uint day,
+        uint hour);
+}
+contract test{
+
+    function _readHourAheadOffer(address _address) returns (uint, int, uint, uint, uint, uint){//reads hour-ahead offer from a given meter
+        HourAheadOfferInterface hourAheadOffer = HourAheadOfferInterface(_address);
+        return hourAheadOffer.readHourAheadOffer();
+    }
+
+address[] _validOffers = [0x692a70d2e424a56d2c6c27aa97d1a86395877b3a,0xbbf289d846208c16edc8474705c748aff07732db,
+                        0x0dcd2f752394c41875e259e00bb44fd505297caf];
+
+
+
+    function _getLowestAboveX(uint[] _array, uint _x) returns(uint){ //for iterating through to find marginal prices
+    uint _lowestIndex = 0;
+    while(_array[_lowestIndex] <= _x){ //first iterate through array until finding next higher price
+        _lowestIndex++; //bug in this prototype: handling identical offers, and offers == 0;
+    }
+    for(uint i = _lowestIndex; i < _array.length; i++){
+        if(_array[i] > _x){
+            if(_array[_lowestIndex] > _array[i]){
+                _lowestIndex = i;
+            }
+        }
+    }
+    return _lowestIndex;
+}
+
+int hourAheadLoad = -40;
+
+    function clearHourAhead() returns (uint, address[]){
+        uint _hourlyPrice; //declare variable for the prices we're returning
+        uint[] memory _hourlyOfferPrices; //create an array of prices offered for the hour
+        uint[] memory _hourlyOfferQuantities; //create an array of quantities offered for the hour
+        for(uint i = 0; i < _validOffers.length; i++){
+            uint _price;
+            int _offerQuantity;
+            (_price, _offerQuantity,,,,) = _readHourAheadOffer(_validOffers[i]);
+            _hourlyOfferPrices[i] = _price;
+            _hourlyOfferQuantities[i] = uint(_offerQuantity);
+            }
+        uint[] _marginalPrices;
+  //      uint[] _clearedOfferIndex;
+        uint _marginalIndex = _getLowestAboveX(_hourlyOfferPrices, 0);
+        uint _genCounter = _hourlyOfferQuantities[_marginalIndex];
+     //   _clearedOffers.push(_validOffers[_marginalIndex]);
+        while(_genCounter < uint(-hourAheadLoad)){
+            _marginalIndex = _getLowestAboveX(_hourlyOfferPrices, _hourlyOfferPrices[_marginalIndex]);//note, this is an implicit MOPR of zero
+            _marginalPrices.push(_hourlyOfferPrices[_marginalIndex]);
+        //    _clearedOffers.push(_validOffers[_marginalIndex]);
+            _genCounter += _hourlyOfferQuantities[_marginalIndex];
+                    } //iterates throgh the supply curve until gen > load;
+        _hourlyPrice = _marginalPrices[_marginalPrices.length -1];
+
+        delete _validOffers; //clears out the array of offers
+
+    //    return (_hourlyPrice, _clearedOffers);
+        }
+
+
+
+
+//25, 30, 35
+//15, 15, 15
+//40, [35, 30, 25, 16, 50], [10, 10, 10, 10, 10]
+uint[] _clearedOffersIndex;
+
+    function findMarginalPrice(uint _demand, uint[] _offerPrices, uint[] _offerQuantities) returns(uint){
+        uint _marginalIndex = _getLowestAboveX(_offerPrices, 0);
+        uint _supplyCounter = 0;
+        _supplyCounter += _offerQuantities[_marginalIndex];
+        _clearedOffersIndex.push(_marginalIndex);
+        while(_supplyCounter <= _demand){
+          _marginalIndex = _getLowestAboveX(_offerPrices, _offerPrices[_marginalIndex]);
+        _clearedOffersIndex.push(_marginalIndex);
+          _supplyCounter += _offerQuantities[_marginalIndex];
+
+        }
+        return(_offerPrices[_marginalIndex]);
+          }
+
+    function printClearedOffersIndex() returns(uint[]){
+        return _clearedOffersIndex;
+    }
+}
+
