@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3bf41edc-fd78-49ec-aa91-c82466143c9e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GUILDS.odt" afterPath="$PROJECT_DIR$/GUILDS.odt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -374,7 +373,14 @@
       <option name="project" value="LOCAL" />
       <updated>1517792554483</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Updated description of EDC ownership structure">
+      <created>1517796048170</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1517796048170</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -423,7 +429,8 @@
     <MESSAGE value="Windows 10 keeps knocking off my browser, committing for safety" />
     <MESSAGE value="Checking text editor" />
     <MESSAGE value="Again, working out text editor" />
-    <option name="LAST_COMMIT_MESSAGE" value="Again, working out text editor" />
+    <MESSAGE value="Updated description of EDC ownership structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated description of EDC ownership structure" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
