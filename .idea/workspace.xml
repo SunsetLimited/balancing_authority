@@ -388,7 +388,14 @@
       <option name="project" value="LOCAL" />
       <updated>1517935944147</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Cost recovery section expanded">
+      <created>1517935992874</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1517935992874</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -438,7 +445,8 @@
     <MESSAGE value="Again, working out text editor" />
     <MESSAGE value="Updated description of EDC ownership structure" />
     <MESSAGE value="Added section on cost recovery" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added section on cost recovery" />
+    <MESSAGE value="Cost recovery section expanded" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cost recovery section expanded" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
