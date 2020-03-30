@@ -1,3 +1,5 @@
+pragma solidity >=0.4.25 <0.6.0;
+
 
 contract SystemMeter is GenMeter{
     ///the system meter is a gen meter that can island
