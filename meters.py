@@ -24,10 +24,22 @@ class genMeter(meter):
     def offer(self, offerPrice, offerQuantity):
         self.offerPrice = offerPrice
         if offerQuantity > self.genCapacity:
-            self.offerQuantity = genCapacity
+            self.offerQuantity = self.genCapacity
         else:
             self.offerQuantity = offerQuantity
 
-#create class for storage meter as well
-    #capacity in hrs, plus efficiency
-    #assume constrain in charge =  discharge
+class storageMeter(meter):
+    def __init__(self, capacity,storageCapacity, duration, efficiency):
+        self.technology = 'storage'
+        self.capacity = capacity
+        self.duration = duration
+        self.storageCapacity = storageCapacity
+        if storageCapacity > self.capacity:
+            self.storageCapacity = self.capacity
+        else:
+            self.storageCapacity = storageCapacity
+        self.maxCharge = self.storageCapacity * self.duration
+        if (efficiency >1)|(efficiency < 0):
+            self.efficiency = .85
+        else:
+            self.efficiency = efficiency

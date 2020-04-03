@@ -3,6 +3,7 @@
 
 #input: ecosystem of meters
     #create meters (loop through, function should generate meters and capacity within random parameters)
+    #solar shape, load patterns
     #initiating bids and offers (bids from load meters, offers from gen meters)
         #offerss will be set at the LCOE
         #wholesale prices will be based on EIA forecasts
