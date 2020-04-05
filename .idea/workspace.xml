@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3bf41edc-fd78-49ec-aa91-c82466143c9e" name="Default" comment="further fleshing out the meter objects for generation">
+    <list default="true" id="3bf41edc-fd78-49ec-aa91-c82466143c9e" name="Default" comment="created storage meter object">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/market.py" beforeDir="false" afterPath="$PROJECT_DIR$/market.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/meters.py" beforeDir="false" afterPath="$PROJECT_DIR$/meters.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -283,7 +282,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585538395540</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="created storage meter object">
+      <created>1585881057876</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1585881057876</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -311,7 +317,8 @@
     <MESSAGE value="Better acronym, more descriptive" />
     <MESSAGE value="PIVOT TO PYTHON&#10;Creating classes of meters, notes for the market clearing mechanism" />
     <MESSAGE value="further fleshing out the meter objects for generation" />
-    <option name="LAST_COMMIT_MESSAGE" value="further fleshing out the meter objects for generation" />
+    <MESSAGE value="created storage meter object" />
+    <option name="LAST_COMMIT_MESSAGE" value="created storage meter object" />
   </component>
   <component name="WindowStateProjectService">
     <state x="720" y="41" width="1200" height="999" key="#Solidity_Solhint_Settings" timestamp="1584406298914">
@@ -322,10 +329,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="422" y="164" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584320913605" />
-    <state x="483" y="0" width="950" height="1039" key="CommitChangelistDialog2" timestamp="1585538395368">
+    <state x="483" y="0" width="950" height="1039" key="CommitChangelistDialog2" timestamp="1585881057645">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="483" y="0" width="950" height="1039" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1585538395368" />
+    <state x="483" y="0" width="950" height="1039" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1585881057645" />
     <state x="644" y="180" width="624" height="701" key="FileChooserDialogImpl" timestamp="1584406278589">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -334,10 +341,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="227" y="0" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1585532875610" />
-    <state x="358" y="137" width="1200" height="772" key="Vcs.Push.Dialog.v2" timestamp="1585538397479">
+    <state x="358" y="137" width="1200" height="772" key="Vcs.Push.Dialog.v2" timestamp="1585881060131">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="358" y="137" width="1200" height="772" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1585538397479" />
+    <state x="358" y="137" width="1200" height="772" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1585881060131" />
     <state x="509" y="278" key="com.intellij.ide.util.TipDialog" timestamp="1585877555658">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

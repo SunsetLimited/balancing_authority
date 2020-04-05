@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+import calendar as cal
 #using the objectins in meters.py, this creates an auction simulation
 #Purpose: determine battery cost necessary for autuarky given market conditions
 
@@ -19,3 +22,38 @@
     #total systemwide savings/loss vs index, over time
     #net position of gen/load vs LCOE
     #report output by autark-affiliance, and by gen project
+
+#create lots of meters
+
+#need to get this hourly data
+    ##solar data
+    #power price data
+    #power usage data
+    #
+
+def mintMeter(quantity, meanCapacity = 10, stdCapacity = 3):
+    for i in np.arange(0, quantity):
+        varName = 'm' + str(i)
+        capacity =np.random.normal( meanCapacity, stdCapacity, 1)[0]
+        print(capacity)
+        globals()[varName] = meter(capacity)
+
+
+monthDict = {}
+for month in np.arange(1,13):
+    monthDict[cal.month_abbr[month]] = pd.Period(cal.month_abbr[month]).days_in_month
+
+monthSeries = pd.Series()
+daySeries = pd.Series()
+hourSeries = pd.Series()
+
+for month in monthDict.keys():
+    for day in np.arange(1,monthDict[month] + 1):
+        for hour in np.arange(0, 24):
+            monthSeries = monthSeries.append(pd.Series([month]))
+            daySeries = daySeries.append(pd.Series([day]))
+            hourSeries = hourSeries.append(pd.Series([hour]))
+
+
+ledger = pd.DataFrame({'month':monthSeries, 'day':daySeries, 'hour':hourSeries})
+
